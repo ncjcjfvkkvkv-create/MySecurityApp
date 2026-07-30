@@ -41,7 +41,10 @@ dependencies:
   battery_plus: ^6.0.2
   app_links: ^6.3.2
   flutter_svg: ^2.0.10
-
+  video_thumbnail: ^0.5.3
+  photo_view: ^0.14.0
+  video_player: ^2.8.0
+  webview_flutter: ^4.8.0
 
 dev_dependencies:
   flutter_launcher_icons: ^0.14.1
@@ -70,7 +73,3 @@ flutter_launcher_icons:
   ios: false
   image_path: "assets/icons/logo.png"
   remove_alpha_ios: true
-  video_thumbnail: ^0.5.3
-  photo_view: ^0.14.0
-  video_player: ^2.8.0
-  webview_flutter: ^4.8.0

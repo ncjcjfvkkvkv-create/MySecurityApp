@@ -49,7 +49,7 @@ class ScheduledScanScheduler {
       constraints: Constraints(
         requiresCharging: pluggedOnly,
       ),
-      existingWorkPolicy: ExistingPeriodicWorkPolicy.replace,
+      existingWorkPolicy: ExistingWorkPolicy.replace,
     );
   }
 

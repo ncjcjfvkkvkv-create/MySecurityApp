@@ -33,7 +33,7 @@ dependencies:
   url_launcher: ^6.3.2
   receive_intent: ^0.2.7
   package_info_plus: ^8.0.0
-  device_info_plus: ^12.2.0
+  device_info_plus: ^9.1.0
   android_intent_plus: ^4.0.3
   in_app_purchase: ^3.2.0
   crypto: ^3.0.3

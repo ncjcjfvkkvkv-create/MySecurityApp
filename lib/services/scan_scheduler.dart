@@ -47,6 +47,7 @@ class ScheduledScanScheduler {
         'mode': mode,
       },
       constraints: Constraints(
+        networkType: NetworkType.connected,
         requiresCharging: pluggedOnly,
       ),
       existingWorkPolicy: ExistingWorkPolicy.replace,

@@ -33,7 +33,7 @@ android {
 
     defaultConfig {
         applicationId = "com.colourswift.cssecurity"
-        minSdk = flutter.minSdkVersion
+        minSdk = 24
         targetSdk = 35
         versionCode = flutter.versionCode
         versionName = flutter.versionName
@@ -81,6 +81,4 @@ dependencies {
     implementation(files("libs/provider-release.aar"))
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
 }
-android {
-    ndkVersion = "27.0.12077973"
-}
+

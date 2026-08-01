@@ -82,3 +82,6 @@ dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
 }
 
+android {
+    ndkVersion = "27.0.12077973"
+}

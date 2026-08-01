@@ -19,10 +19,12 @@ class MainActivity : FlutterActivity() {
                         try {
                             val pm = packageManager
                             val apps = pm.getInstalledApplications(PackageManager.GET_META_DATA)
-                            val list = apps.map { app ->
+                            val list = apps.mapNotNull { app ->
+                                val sourceDir = app.sourceDir
+                                if (sourceDir == null) return@mapNotNull null
                                 mapOf(
                                     "name" to pm.getApplicationLabel(app).toString(),
-                                    "path" to app.sourceDir,
+                                    "path" to sourceDir,
                                     "packageName" to app.packageName
                                 )
                             }
@@ -41,6 +43,10 @@ class MainActivity : FlutterActivity() {
                             val pm = packageManager
                             val packageInfo = pm.getPackageInfo(packageName, 0)
                             val sourceDir = packageInfo.applicationInfo.sourceDir
+                            if (sourceDir == null) {
+                                result.error("COPY_FAILED", "Source dir is null", null)
+                                return@setMethodCallHandler
+                            }
                             val cacheDir = cacheDir.absolutePath
                             val apkFile = File(sourceDir)
                             val destFile = File("$cacheDir/$packageName.apk")

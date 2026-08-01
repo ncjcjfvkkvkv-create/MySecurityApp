@@ -22,80 +22,104 @@ class PermissionHandler extends StatefulWidget {
 
 class _PermissionHandlerState extends State<PermissionHandler> {
   bool ready = false;
-  bool checking = false;
+  bool checking = true;
 
   @override
   void initState() {
     super.initState();
-    _ask();
+    _checkAll();
   }
 
-  Future<void> _ask() async {
-    if (checking) return;
+  Future<void> _checkAll() async {
     setState(() => checking = true);
 
-    // مجوزهای معمولی
-    final statuses = await [
-      Permission.storage,
-    ].request();
+    // چک کردن همه مجوزها
+    final storage = await Permission.storage.status;
+    final manage = await Permission.manageExternalStorage.status;
 
-    // مجوز مدیریت فایل (Android 11+)
-    PermissionStatus manageStorageStatus = await Permission.manageExternalStorage.status;
-    if (!manageStorageStatus.isGranted) {
-      manageStorageStatus = await Permission.manageExternalStorage.request();
+    bool allOk = storage.isGranted && manage.isGranted;
+
+    // اگه مجوز مدیریت فایل داده نشده، درخواست کن
+    if (!manage.isGranted) {
+      final result = await Permission.manageExternalStorage.request();
+      allOk = storage.isGranted && result.isGranted;
     }
 
-    final allGranted = statuses.values.every((s) => s.isGranted) && manageStorageStatus.isGranted;
+    // اگه مجوز storage داده نشده، درخواست کن
+    if (!storage.isGranted) {
+      final result = await Permission.storage.request();
+      allOk = result.isGranted && manage.isGranted;
+    }
 
     setState(() {
-      ready = allGranted;
+      ready = allOk;
       checking = false;
     });
 
-    if (!allGranted) {
-      // اگه مجوز مدیریت فایل رو نداد، مستقیم به تنظیمات میفرستیم
-      if (!manageStorageStatus.isGranted) {
-        await openAppSettings();
-      }
+    // اگه بازم نشد، دوباره چک کن
+    if (!allOk) {
+      Future.delayed(const Duration(seconds: 2), () {
+        _checkAll();
+      });
     }
   }
 
   @override
-  Widget build(BuildContext context) => ready
-      ? const MainShell()
-      : Scaffold(
-        backgroundColor: Colors.black,
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (checking) ...[
-                const CircularProgressIndicator(color: Colors.blue),
-                const SizedBox(height: 20),
-                const Text(
-                  'درخواست مجوز...',
-                  style: TextStyle(color: Colors.white, fontSize: 18),
+  Widget build(BuildContext context) {
+    if (ready) {
+      return const MainShell();
+    }
+
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (checking) ...[
+              const CircularProgressIndicator(color: Colors.blue),
+              const SizedBox(height: 20),
+              const Text(
+                'در حال بررسی مجوزها...',
+                style: TextStyle(color: Colors.white, fontSize: 16),
+              ),
+            ] else ...[
+              const Icon(Icons.warning, color: Colors.orange, size: 60),
+              const SizedBox(height: 20),
+              const Text(
+                'لطفاً مجوز مدیریت فایل رو فعال کنید',
+                style: TextStyle(color: Colors.white, fontSize: 18),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 10),
+              const Text(
+                'برای اسکن کامل گوشی نیازه',
+                style: TextStyle(color: Colors.grey, fontSize: 14),
+              ),
+              const SizedBox(height: 30),
+              ElevatedButton.icon(
+                onPressed: _checkAll,
+                icon: const Icon(Icons.refresh),
+                label: const Text('بررسی مجدد'),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
-              ] else ...[
-                const Icon(Icons.warning, color: Colors.orange, size: 60),
-                const SizedBox(height: 20),
-                const Text(
-                  'لطفاً همه مجوزها رو بدهید',
-                  style: TextStyle(color: Colors.white, fontSize: 18),
+              ),
+              const SizedBox(height: 15),
+              TextButton(
+                onPressed: openAppSettings,
+                child: const Text(
+                  'رفتن به تنظیمات دستی',
+                  style: TextStyle(color: Colors.blue),
                 ),
-                const SizedBox(height: 10),
-                const Text(
-                  'باید مجوز "مدیریت فایل" رو فعال کنید',
-                  style: TextStyle(color: Colors.grey, fontSize: 14),
-                ),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: _ask,
-                  child: const Text('تلاش مجدد'),
-                ),
-              ],
+              ),
             ],
-          ),
+          ],
         ),
-      );
+      ),
+    );
+  }
 }

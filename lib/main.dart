@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'screens/home/home_screen.dart';
+import 'screens/main_shell.dart';
 
 void main() {
   runApp(const MyApp());
@@ -51,7 +51,6 @@ class _PermissionHandlerState extends State<PermissionHandler> {
     });
 
     if (!allGranted) {
-      // اگه همه مجوزها داده نشده، دوباره بپرس
       await _requestPermissions();
     }
   }
@@ -59,7 +58,7 @@ class _PermissionHandlerState extends State<PermissionHandler> {
   @override
   Widget build(BuildContext context) {
     if (_allGranted) {
-      return const HomeScreen();
+      return const MainShell();
     } else {
       return Scaffold(
         backgroundColor: Colors.black,

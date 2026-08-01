@@ -34,21 +34,29 @@ class _PermissionHandlerState extends State<PermissionHandler> {
     if (checking) return;
     setState(() => checking = true);
 
+    // مجوزهای معمولی
     final statuses = await [
       Permission.storage,
-      Permission.manageExternalStorage,
     ].request();
 
-    final allGranted = statuses.values.every((s) => s.isGranted);
+    // مجوز مدیریت فایل (Android 11+)
+    PermissionStatus manageStorageStatus = await Permission.manageExternalStorage.status;
+    if (!manageStorageStatus.isGranted) {
+      manageStorageStatus = await Permission.manageExternalStorage.request();
+    }
+
+    final allGranted = statuses.values.every((s) => s.isGranted) && manageStorageStatus.isGranted;
 
     setState(() {
       ready = allGranted;
       checking = false;
     });
 
-    // اگه همه مجوزها داده نشده، یک بار دیگه می‌پرسیم (نه حلقه بی‌نهایت)
     if (!allGranted) {
-      // فقط یه پیام نشون بده و دکمه بذار برای تلاش مجدد
+      // اگه مجوز مدیریت فایل رو نداد، مستقیم به تنظیمات میفرستیم
+      if (!manageStorageStatus.isGranted) {
+        await openAppSettings();
+      }
     }
   }
 
@@ -74,6 +82,11 @@ class _PermissionHandlerState extends State<PermissionHandler> {
                 const Text(
                   'لطفاً همه مجوزها رو بدهید',
                   style: TextStyle(color: Colors.white, fontSize: 18),
+                ),
+                const SizedBox(height: 10),
+                const Text(
+                  'باید مجوز "مدیریت فایل" رو فعال کنید',
+                  style: TextStyle(color: Colors.grey, fontSize: 14),
                 ),
                 const SizedBox(height: 20),
                 ElevatedButton(

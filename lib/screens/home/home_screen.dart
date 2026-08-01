@@ -1,3 +1,4 @@
+import '../full_scan_screen.dart';
 import 'dart:async';
 import 'dart:math' as math;
 import 'package:colourswift_av/screens/password%20manager/password_manager_screen.dart';

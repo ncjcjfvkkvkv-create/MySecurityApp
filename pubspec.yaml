@@ -76,3 +76,4 @@ flutter_launcher_icons:
   ios: false
   image_path: "assets/icons/logo.png"
   remove_alpha_ios: true
+  syncfusion_flutter_gauges: ^24.1.41

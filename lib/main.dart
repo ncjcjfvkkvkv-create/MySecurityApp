@@ -1,3 +1,4 @@
+import 'screens/full_scan_screen.dart';
 import 'package:colourswift_av/services/defs_update_scheduler.dart';
 import 'package:colourswift_av/utils/route_observer.dart';
 import 'package:colourswift_av/widgets/antivirus_bridge.dart';

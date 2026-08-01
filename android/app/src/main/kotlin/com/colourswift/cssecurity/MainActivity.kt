@@ -42,7 +42,12 @@ class MainActivity : FlutterActivity() {
                         try {
                             val pm = packageManager
                             val packageInfo = pm.getPackageInfo(packageName, 0)
-                            val sourceDir = packageInfo.applicationInfo.sourceDir
+                            val appInfo = packageInfo.applicationInfo
+                            if (appInfo == null) {
+                                result.error("COPY_FAILED", "ApplicationInfo is null", null)
+                                return@setMethodCallHandler
+                            }
+                            val sourceDir = appInfo.sourceDir
                             if (sourceDir == null) {
                                 result.error("COPY_FAILED", "Source dir is null", null)
                                 return@setMethodCallHandler
